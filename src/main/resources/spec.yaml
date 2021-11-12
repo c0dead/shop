@@ -1,0 +1,77 @@
+openapi: 3.0.3
+# Сначала будем писать спецификацию, а потом по ней API.
+# Чаще всего эта спецификация генерируется Spring'ом, потом мы подключим
+# специальный модуль, который будет позволять нам получать спецификацию
+# во время работы с сервером.
+info: # первичная спецификация
+  title: Title
+  description: Title
+  version: 1.0.0
+servers: # пишем http, а не https, т. к. у нас незащищённое соединение
+  - url: 'http'
+paths: # в paths указываем url (путь), по которому будем обращаться к серверу для того, чтобы получить
+  # все музыкальные альбомы, т. е. придумываем имя url'ы
+  /cd: # cd -- url (путь)
+    get: # тип запроса -- get; описываем get-запрос
+      description: get the list of all available CDs # описываем, что делает запрос
+      responses: # предусматриваем, какие типы ответов могут быть (http-коды ошибок)
+        200: # базовый ответ -- код 200 (значит, что всё хорошо)
+          description: everything is ok
+          content: # ответ будет возвращать content типа application/json
+            application/json:
+              schema: # ещё не продумали
+                oneOf: # можно не писать oneOf, но лучше писать, т. к. может быть несколько вариантов ответов в зависимости от ситуации
+                  - $ref: '#/components/schemas/cds'
+
+# описываем схему
+components:
+  schemas: # cds -- название схемы
+    cds:
+      additionalProperties: false # для валидации схемы; говорит о том, что других свойств, помимо тех, что мы описали, быть не должно
+      type: object # пишем json-схему; задаём корневой элемент как объект (так лучше), внутри объекта будет массив
+      properties:
+        cd_list:
+          type: array
+          items:
+            $ref: '#/components/schemas/cd'
+
+    cd: # описываем наполнение (характеристики) товара
+      type: object # cd-диск -- это object
+      description: the brief info about a cd
+      required: # указываем все поля, которые обязательно должны быть (эти поля не могут быть null)
+        - name
+        - artist
+        - release_date
+        - genre
+        - album_cover
+        - price
+      properties: # описываем свойства cd-диска
+        id:
+          type: integer # не number?
+          description: the id of a cd
+        name:
+          type: string
+          description: the name of an album
+        artist:
+          type: string
+          description: the name of an artist
+        release_date:
+          type: string
+          description: the release date of an album
+        genre:
+          type: string
+          description: the genre of an album
+        album_cover:
+          type: string # указание, какую static'у доставать (url)
+          description: the relative url of an image
+        price:
+          type: number
+          description: the price of an album
+
+
+
+
+
+
+
+

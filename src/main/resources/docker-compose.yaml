@@ -1,0 +1,24 @@
+# Use postgres/example user/password credentials
+version: '3.1'
+
+# при нажатии на двойную стрелку начнётся запуск контейнера, в котором будет лежать
+# 2 приложения: база данных (БД) Postgres и админка от него, написанная на php
+# (эту админку использовать не будем, но оставим на всякий случай; у нас будет своя админка)
+services:
+
+  db:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - 5432:5432
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8081:8080
+      # порт 8081, чтобы он не конфликтовал с запущенными веб-сервисами
+      # внешний и внутренний порт: adminer запускается на внутреннем порте 8080, внешний порт 8081
